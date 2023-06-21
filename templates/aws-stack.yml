@@ -80,6 +80,8 @@ Metadata:
         - RootVolumeName
         - RootVolumeType
         - RootVolumeEncrypted
+        - RootVolumeIops
+        - RootVolumeThroughput
         - ManagedPolicyARN
         - InstanceRoleName
         - InstanceRolePermissionsBoundaryARN
@@ -355,6 +357,16 @@ Parameters:
       - "true"
       - "false"
     Default: "false"
+
+  RootVolumeIops:
+    Description: The desired Iops for the EBS volume
+    Type: Number
+    Default: 16000
+
+  RootVolumeThroughput:
+    Description: The desired throughput in MiB/s for the EBS volume
+    Type: Number
+    Default: 1000
 
   SecurityGroupId:
     Type: String
@@ -1101,7 +1113,7 @@ Resources:
                     - 'linuxamd64'
           BlockDeviceMappings:
             - DeviceName: !If [ UseDefaultRootVolumeName, !If [ UseWindowsAgents, /dev/sda1, /dev/xvda ], !Ref RootVolumeName ]
-              Ebs: { VolumeSize: !Ref RootVolumeSize, VolumeType: !Ref RootVolumeType, Encrypted: !Ref RootVolumeEncrypted }
+              Ebs: { VolumeSize: !Ref RootVolumeSize, VolumeType: !Ref RootVolumeType, Encrypted: !Ref RootVolumeEncrypted, Iops: !Ref RootVolumeIops, Throughput: !Ref RootVolumeThroughput}
           TagSpecifications:
             - ResourceType: instance
               Tags:
